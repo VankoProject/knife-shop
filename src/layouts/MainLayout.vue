@@ -1,18 +1,19 @@
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <template>
- <div>
+  <div>
     <header>
-        <nav>
-            <router-link to="/login">Login</router-link> |
-  <router-link to="/catalog">Catalog</router-link> |
-  <router-link to="/cart">Cart</router-link>
-        </nav>
+      <nav>
+        <router-link to="/login">Login</router-link>
+        |
+        <router-link to="/catalog">Catalog</router-link>
+        |
+        <router-link to="/cart">Cart</router-link>
+      </nav>
     </header>
 
     <main>
-        <router-view />
+      <router-view />
     </main>
- </div>
+  </div>
 </template>

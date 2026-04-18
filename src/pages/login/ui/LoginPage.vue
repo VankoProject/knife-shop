@@ -37,6 +37,5 @@ watch(
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #4b4b4b;
 }
 </style>

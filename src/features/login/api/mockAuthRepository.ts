@@ -13,7 +13,7 @@ export class MockAuthRepository implements AuthRepository {
             avatar: request.avatar
           }
         })
-      }, 700)
+      }, 2000)
     })
   }
 

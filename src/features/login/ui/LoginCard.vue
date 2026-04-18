@@ -5,9 +5,7 @@ interface Props {
   loading?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
-  loading: false
-})
+const { loading = false } = defineProps<Props>()
 
 defineEmits<{
   (event: 'submit'): void
@@ -16,8 +14,8 @@ defineEmits<{
 
 <template>
   <section class="login-card">
-    <h1 class="login-card_title">Вход</h1>
-    <p class="login-card_subtitle">Подтвердите вход</p>
+    <p class="login-card_title">Добро пожаловать</p>
+    <div class="spacer" />
 
     <ActionButton
       label="Войти"
@@ -31,19 +29,27 @@ defineEmits<{
 <style scoped>
 .login-card {
   width: 100%;
-  max-width: 420px;
-  padding: 32px 32px;
+  max-width: 440px;
+  padding: 32px;
   border-radius: 16px;
-  background: white;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .login-card_title {
   margin: 0 0 24px;
   text-align: center;
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
-.login-card_subtitle {
-  margin: 0 0 24px;
-  text-align: center;
+.spacer {
+  flex: 1;
 }
 </style>

@@ -1,19 +1,18 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div>
-    <header>
-      <nav>
-        <router-link to="/login">Login</router-link>
-        |
-        <router-link to="/catalog">Catalog</router-link>
-        |
-        <router-link to="/cart">Cart</router-link>
-      </nav>
-    </header>
-
-    <main>
-      <router-view />
-    </main>
-  </div>
+  <main class="main-layout">
+    <router-view />
+  </main>
 </template>
+
+<style scoped>
+.main-layout {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: white;
+}
+</style>

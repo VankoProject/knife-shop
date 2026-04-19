@@ -17,6 +17,7 @@ const routes: RouteRecordRaw[] = [
         path: 'login',
         name: 'login',
         component: () => import('@/pages/login/ui/LoginPage.vue'),
+        meta: { hideHeader: true },
       },
       {
         path: 'catalog',

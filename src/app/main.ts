@@ -9,4 +9,14 @@ const pinia = createPinia()
 
 app.use(pinia)
 app.use(router)
-app.mount('#app')
+
+async function enableMocking(): Promise<void> {
+  if (import.meta.env.DEV) {
+    const { worker } = await import('@/shared/api/mock/browser')
+    await worker.start()
+  }
+}
+
+enableMocking().then(() => {
+  app.mount('#app')
+})

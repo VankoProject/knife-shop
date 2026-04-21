@@ -1,20 +1,39 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+
 interface Props {
   image: string
   name: string
   rarity: string
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+
+const rarityClass = computed(() => {
+  return `product-card-media__badge--${props.rarity}`
+})
+
+function onImageError(event: Event): void {
+  const target = event.target
+
+  if (target instanceof HTMLImageElement) {
+    target.src = '/images/fallback.png'
+  }
+}
 </script>
 
 <template>
   <div class="product-card-media">
-    <div class="product-card-media__badge">
-      {{ rarity }}
+    <div class="product-card-media__badge" :class="rarityClass">
+      {{ props.rarity }}
     </div>
 
-    <img class="product-card-media__image" :src="image" :alt="name" />
+    <img
+      class="product-card-media__image"
+      :src="image || '/images/placeholder.png'"
+      :alt="name"
+      @error="onImageError"
+    />
   </div>
 </template>
 
@@ -53,5 +72,24 @@ defineProps<Props>()
 
   display: block;
   object-fit: cover;
+}
+
+.product-card-media__badge--consumer {
+  background: #9e9e9e;
+}
+.product-card-media__badge--industrial {
+  background: #4caf50;
+}
+.product-card-media__badge--mil-spec {
+  background: #2196f3;
+}
+.product-card-media__badge--restricted {
+  background: #9c27b0;
+}
+.product-card-media__badge--classified {
+  background: #e91e63;
+}
+.product-card-media__badge--covert {
+  background: #f44336;
 }
 </style>

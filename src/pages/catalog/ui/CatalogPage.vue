@@ -1,25 +1,21 @@
 <script setup lang="ts">
-import type { Rarity } from '@/entities/product/model/types'
-import ProductCard from '@/entities/product/ui/productCard/ProductCard.vue'
+import CatalogContent from '@/widgets/catalog-content/ui/CatalogContent.vue'
+import { mockProducts } from '@/entities/product/model/mock/products.ts'
 
-const mockProduct = {
-  id: '1',
-  name: 'Crimson Edge',
-  price: 199.9,
-  rarity: 'cover' as Rarity,
-  inStock: false,
-  tags: ['limited', 'knife', 'steel'],
-  image: 'https://pngimg.com/uploads/knife/knife_PNG107.png',
-  updatedAt: '2024-01-01'
+const products = mockProducts
+function onAddToCart(productId: string): void {
+  alert(productId)
 }
 </script>
 
 <template>
-  <main style="padding: 40px">
-    <ProductCard
-      :product="mockProduct"
-      button-state="idle"
-      @addToCart="console.log"
-    />
+  <main class="catalog-page">
+    <CatalogContent :products="products" @add-to-cart="onAddToCart" />
   </main>
 </template>
+
+<style scoped>
+.catalog-page {
+  padding: 40px;
+}
+</style>

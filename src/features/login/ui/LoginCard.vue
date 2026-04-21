@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import ActionButton from '@/shared/ui/button/ActionButton.vue'
+import type { ButtonState } from '@/shared/ui/button/buttonState.ts'
 
 interface Props {
-  loading?: boolean
+  buttonState?: ButtonState
 }
 
-const { loading = false } = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  buttonState: 'idle'
+})
 
-defineEmits<{
+const emit = defineEmits<{
   (event: 'submit'): void
 }>()
 </script>
@@ -19,9 +22,9 @@ defineEmits<{
 
     <ActionButton
       label="Войти"
-      :loading="loading"
-      :disabled="loading"
-      @click="$emit('submit')"
+      :state="props.buttonState"
+      size="large"
+      @press="emit('submit')"
     />
   </section>
 </template>

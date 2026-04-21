@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { useLoginStore } from '@/features/login/model/store.ts'
-import { watch } from 'vue'
+import { computed, watch } from 'vue'
 import LoginCard from '@/features/login/ui/LoginCard.vue'
+import type { ButtonState } from '@/shared/ui/button/buttonState.ts'
 
 const router = useRouter()
 const loginStore = useLoginStore()
+
+const buttonState = computed<ButtonState>(()=>{
+  return loginStore.isLoading ? 'loading' : 'idle'
+})
 
 async function onSubmit(): Promise<void> {
   await loginStore.login({
@@ -27,7 +32,7 @@ watch(
 
 <template>
   <main class="login-page">
-    <LoginCard :loading="loginStore.isLoading" @submit="onSubmit" />
+    <LoginCard :button-state="buttonState" @submit="onSubmit" />
   </main>
 </template>
 

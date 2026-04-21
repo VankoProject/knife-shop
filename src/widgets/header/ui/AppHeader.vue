@@ -99,7 +99,7 @@ async function logout() {
   border-radius: 10px;
   border: 1px solid transparent;
   background: transparent;
-  color: #374151;
+  color: var(--text-primary);
   cursor: pointer;
   transition: 0.2s ease;
 }

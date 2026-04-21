@@ -56,5 +56,3 @@ export function generateMockProducts(count: number): Product[] {
     }
   })
 }
-
-export const mockProducts: Product[] = generateMockProducts(80)

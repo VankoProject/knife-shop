@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Product } from '@/entities/product/model/types.ts'
-import ProductCard from '@/entities/product/ui/productCard/ProductCard.vue'
+import ProductCard from '@/entities/product/ui/ProductCard.vue'
 
 interface Props {
   products: Product[]
@@ -10,10 +10,14 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<{
   (event: 'addToCart', productId: string): void
+  (event: 'openDetails', productId: string): void
 }>()
 
 function addToCart(productId: string): void {
   emit('addToCart', productId)
+}
+function onOpenDetails(productId: string): void {
+  emit('openDetails', productId)
 }
 </script>
 
@@ -24,6 +28,7 @@ function addToCart(productId: string): void {
       :key="product.id"
       :product="product"
       @add-to-cart="addToCart"
+      @open-details="onOpenDetails"
     />
   </section>
 </template>

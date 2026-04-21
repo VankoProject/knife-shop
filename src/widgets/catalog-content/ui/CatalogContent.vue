@@ -14,6 +14,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<{
   (event: 'addToCart', productId: string): void
   (event: 'changePage', page: number): void
+  (event: 'openDetails', productId: string): void
 }>()
 
 function onAddToCart(productId: string): void {
@@ -23,13 +24,18 @@ function onAddToCart(productId: string): void {
 function onChangePage(page: number): void {
   emit('changePage', page)
 }
+function onOpenDetails(productId: string): void {
+  emit('openDetails', productId)
+}
 </script>
 
 <template>
   <section class="catalog-content">
     <CatalogProductGrid
       :products="props.products"
-      @add-to-cart="onAddToCart" />
+      @add-to-cart="onAddToCart"
+      @open-details="onOpenDetails"
+    />
 
     <CatalogPagination
       :current-page="props.currentPage"

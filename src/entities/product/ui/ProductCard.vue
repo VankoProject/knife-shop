@@ -4,8 +4,8 @@ import ActionButton from '@/shared/ui/button/ActionButton.vue'
 import ProductCardMedia from './ProductCardMedia.vue'
 import ProductTags from './ProductTags.vue'
 
-import type { Product } from '@/entities/product/model/types'
-import type { ButtonState } from '@/shared/ui/button/buttonState'
+import type { Product } from '@/entities/product/model/types.ts'
+import type { ButtonState } from '@/shared/ui/button/buttonState.ts'
 import { formatPrice } from '@/shared/lib/formatPrice.ts'
 
 interface Props {
@@ -19,6 +19,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   (event: 'addToCart', productId: string): void
+  (event: 'openDetails', productId: string): void
 }>()
 
 const stockLabel = computed(() => {
@@ -40,17 +41,20 @@ const formattedPrice = computed(() => {
 function onAddToCart(): void {
   emit('addToCart', props.product.id)
 }
+
+function onOpenDetails(): void {
+  emit('openDetails', props.product.id)
+}
 </script>
 
 <template>
   <article class="product-card">
-    <ProductCardMedia
-      :image="props.product.image"
-      :name="props.product.name"
-      :rarity="props.product.rarity"
-    />
-
-    <div class="product-card__content">
+    <div class="product-card__content" @click="onOpenDetails">
+      <ProductCardMedia
+        :image="props.product.image"
+        :name="props.product.name"
+        :rarity="props.product.rarity"
+      />
       <h3 class="product-card__title">
         {{ props.product.name }}
       </h3>
@@ -68,14 +72,13 @@ function onAddToCart(): void {
       >
         {{ stockLabel }}
       </p>
-
-      <ActionButton
-        label="Add to cart"
-        size="xsmall"
-        :state="actionButtonState"
-        @press="onAddToCart"
-      />
     </div>
+    <ActionButton
+      label="Add to cart"
+      size="xsmall"
+      :state="actionButtonState"
+      @press="onAddToCart"
+    />
   </article>
 </template>
 
@@ -97,6 +100,7 @@ function onAddToCart(): void {
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
+  cursor: pointer;
 }
 
 .product-card__title {

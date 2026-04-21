@@ -3,7 +3,9 @@ import CatalogContent from '@/widgets/catalog-content/ui/CatalogContent.vue'
 import { computed, onMounted, ref } from 'vue'
 import type { Product } from '@/entities/product/model/types.ts'
 import { getProductsRequest } from '@/entities/product/api/getProducts.ts'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const products = ref<Product[]>([])
 const isLoading = ref(false)
 const errorMessage = ref<string | null>(null)
@@ -45,6 +47,13 @@ function onAddToCart(productId: string): void {
   alert(productId)
 }
 
+function onOpenDetails(productId: string): void {
+  router.push({
+    name: 'product',
+    params: { id: productId }
+  })
+}
+
 onMounted(() => {
   loadProducts()
 })
@@ -61,6 +70,7 @@ onMounted(() => {
       :total-pages="totalPages"
       @add-to-cart="onAddToCart"
       @change-page="onChangePage"
+      @open-details="onOpenDetails"
     />
   </main>
 </template>

@@ -42,14 +42,6 @@ async function logout() {
           >
             Cart
           </button>
-
-          <button
-            class="nav-button"
-            :class="{ 'nav-button--active': isActive('/checkout') }"
-            @click="goTo('/checkout')"
-          >
-            Checkout
-          </button>
         </nav>
       </div>
 

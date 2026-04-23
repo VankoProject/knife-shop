@@ -39,4 +39,5 @@ export const productHandlers = [
 
     return HttpResponse.json(product)
   })
+
 ]

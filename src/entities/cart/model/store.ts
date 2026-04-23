@@ -19,7 +19,7 @@ export const useCartStore = defineStore('cart', () => {
   const currency = computed(() => cart.value?.currency ?? 'USD')
   const isEmpty = computed(() => items.value.length === 0)
 
-  function setCart(newCart: Cart): void {
+  function replaceCart(newCart: Cart): void {
     cart.value = newCart
   }
 
@@ -45,7 +45,7 @@ export const useCartStore = defineStore('cart', () => {
 
     try {
       const response = await getCartApi()
-      setCart(response)
+      replaceCart(response)
     } catch {
       setError('Failed to load cart')
     } finally {
@@ -58,7 +58,7 @@ export const useCartStore = defineStore('cart', () => {
 
     try {
       const response = await addToCartApi({ productId, qty })
-      setCart(response)
+      replaceCart(response)
     } catch (error) {
       if (typeof error === 'object' && error !== null && 'error' in error) {
         setError(String(error.error))
@@ -74,7 +74,7 @@ export const useCartStore = defineStore('cart', () => {
 
     try {
       const response = await updateCartItemApi({ productId, qty })
-      setCart(response)
+      replaceCart(response)
     } catch (error) {
       if (typeof error == 'object' && error !== null && 'error' in error) {
         setError(String(error.error))
@@ -89,7 +89,7 @@ export const useCartStore = defineStore('cart', () => {
 
     try {
       const response = await removeCartItemApi({ productId })
-      setCart(response)
+      replaceCart(response)
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message)
@@ -108,11 +108,8 @@ export const useCartStore = defineStore('cart', () => {
     subtotal,
     currency,
     isEmpty,
-    setCart,
-    setLoading,
-    setError,
+    replaceCart,
     clearCart,
-    clearError,
     loadCart,
     addToCart,
     updateCartItem,

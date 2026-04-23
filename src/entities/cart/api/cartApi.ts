@@ -15,7 +15,7 @@ export async function getCartApi(): Promise<Cart> {
   return response.json()
 }
 
-export async function AddToCartApi(request: AddToCartRequest): Promise<Cart> {
+export async function addToCartApi(request: AddToCartRequest): Promise<Cart> {
   const response = await fetch('/api/cart/add', {
     method: 'POST',
     headers: {

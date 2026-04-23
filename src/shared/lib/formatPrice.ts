@@ -1,10 +1,6 @@
-export function formatPrice(
-  value: number,
-  locale: string = 'en-US',
-  currency: string = 'USD'
-): string {
-  return new Intl.NumberFormat(locale, {
+export function formatPrice(amount: number, currency: string = 'USD'): string {
+  return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency
-  }).format(value)
+  }).format(amount)
 }

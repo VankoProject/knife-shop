@@ -1,7 +1,12 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import type { Cart } from '@/entities/cart/model/types.ts'
-import { getCartApi } from '@/entities/cart/api/cartApi.ts'
+import {
+  addToCartApi,
+  getCartApi,
+  removeCartItemApi,
+  updateCartItemApi
+} from '@/entities/cart/api/cartApi.ts'
 
 export const useCartStore = defineStore('cart', () => {
   const cart = ref<Cart | null>(null)
@@ -48,6 +53,53 @@ export const useCartStore = defineStore('cart', () => {
     }
   }
 
+  async function addToCart(productId: string, qty: number = 1): Promise<void> {
+    clearError()
+
+    try {
+      const response = await addToCartApi({ productId, qty })
+      setCart(response)
+    } catch (error) {
+      if (typeof error === 'object' && error !== null && 'error' in error) {
+        setError(String(error.error))
+        return
+      }
+
+      setError('Failed to add product to cart')
+    }
+  }
+
+  async function updateCartItem(productId: string, qty: number): Promise<void> {
+    clearError()
+
+    try {
+      const response = await updateCartItemApi({ productId, qty })
+      setCart(response)
+    } catch (error) {
+      if (typeof error == 'object' && error !== null && 'error' in error) {
+        setError(String(error.error))
+        return
+      }
+      setError('Failed to update cart item')
+    }
+  }
+
+  async function removeCartItem(productId: string): Promise<void> {
+    clearError()
+
+    try {
+      const response = await removeCartItemApi({ productId })
+      setCart(response)
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message)
+        return
+      }
+
+      setError('Failed to remove cart item')
+    }
+  }
+
   return {
     cart,
     isLoading,
@@ -61,6 +113,9 @@ export const useCartStore = defineStore('cart', () => {
     setError,
     clearCart,
     clearError,
-    loadCart
+    loadCart,
+    addToCart,
+    updateCartItem,
+    removeCartItem
   }
 })

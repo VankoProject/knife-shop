@@ -4,10 +4,12 @@ import { useRoute } from 'vue-router'
 import type { Product } from '@/entities/product/model/types.ts'
 import { computed, onMounted, ref } from 'vue'
 import { getProductByIdRequest } from '@/entities/product/api/getProductById.ts'
+import { useCartStore } from '@/entities/cart/model/store.ts'
 
 type ProductPageState = 'loading' | 'error' | 'success'
 
 const route = useRoute()
+const cartState = useCartStore()
 
 const product = ref<Product | null>(null)
 const isLoading = ref(false)
@@ -35,7 +37,7 @@ async function loadProduct(): Promise<void> {
 }
 
 function onAddToCart(productId: string): void {
-  alert(productId)
+  cartState.addToCart(productId, 1)
 }
 
 onMounted(() => {

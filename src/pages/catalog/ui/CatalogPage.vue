@@ -4,8 +4,10 @@ import { computed, onMounted, ref } from 'vue'
 import type { Product } from '@/entities/product/model/types.ts'
 import { getProductsRequest } from '@/entities/product/api/getProducts.ts'
 import { useRouter } from 'vue-router'
+import { useCartStore } from '@/entities/cart/model/store.ts'
 
 const router = useRouter()
+const cartStore = useCartStore()
 const products = ref<Product[]>([])
 const isLoading = ref(false)
 const errorMessage = ref<string | null>(null)
@@ -44,7 +46,7 @@ function onChangePage(page: number): void {
 }
 
 function onAddToCart(productId: string): void {
-  alert(productId)
+  cartStore.addToCart(productId, 1)
 }
 
 function onOpenDetails(productId: string): void {

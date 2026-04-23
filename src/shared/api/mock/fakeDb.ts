@@ -1,6 +1,11 @@
 import type { Product } from '@/entities/product/model/types.ts'
 import { generateMockProducts } from '@/entities/product/model/mock/products.ts'
 import type { Cart } from '@/entities/cart/model/types.ts'
+import type {
+  CheckoutRequest,
+  CheckoutResponse
+} from '@/features/checkout/model/types.ts'
+import { orderIdGenerator } from '@/features/checkout/model/order.ts'
 
 class FakeDataBase {
   private readonly products: Product[]
@@ -90,6 +95,14 @@ class FakeDataBase {
     return this.cart
   }
 
+  public clearCart(): Cart {
+    this.cart.items = []
+    this.cart.subtotal = 0
+    this.cart.updatedAt = new Date().toISOString()
+
+    return this.cart
+  }
+
   public removeCartItem(productId: string): Cart {
     this.cart.items = this.cart.items.filter(
       (item) => item.productId !== productId
@@ -98,6 +111,29 @@ class FakeDataBase {
     this.recalculateCart()
 
     return this.cart
+  }
+
+  public checkout(request: CheckoutRequest): CheckoutResponse {
+    if (!request.customer.name.trim()) {
+      throw {
+        status: 422,
+        error: 'INVALID_CUSTOMER'
+      }
+    }
+
+    if (request.cart.updatedAt !== this.cart.updatedAt) {
+      throw {
+        status: 409,
+        error: 'CART_OUTDATED',
+        serverCart: this.cart
+      }
+    }
+
+    const orderId = orderIdGenerator.generateOrderId()
+
+    this.clearCart()
+
+    return { orderId }
   }
 }
 

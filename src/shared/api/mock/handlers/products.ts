@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import { fakeDb } from '@/shared/api/mock/fakeDb.ts'
+import { errorResponse } from '@/shared/api/mock/errorResponse.ts'
 
 export const productHandlers = [
   http.get('/api/products', ({ request }) => {
@@ -24,20 +25,13 @@ export const productHandlers = [
   }),
 
   http.get('/api/products/:id', ({ params }) => {
-    const productId = String(params.id)
-    const product = fakeDb.productById(productId)
+    try {
+      const productId = String(params.id)
+      const product = fakeDb.productById(productId)
 
-    if (!product) {
-      return HttpResponse.json(
-        {
-          error: 'PRODUCT_NOT_FOUND',
-          message: 'Product not found'
-        },
-        { status: 404 }
-      )
+      return HttpResponse.json(product)
+    } catch (error) {
+      return errorResponse(error)
     }
-
-    return HttpResponse.json(product)
   })
-
 ]

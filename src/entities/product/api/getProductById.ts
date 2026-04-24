@@ -6,7 +6,7 @@ export async function getProductByIdRequest(id: string): Promise<Product> {
 
   if (!response.ok) {
     const errorData: ProductErrorResponse = await response.json()
-    throw errorData
+    throw errorData as ProductErrorResponse
   }
 
   return response.json()

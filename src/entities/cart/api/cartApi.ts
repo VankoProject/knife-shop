@@ -1,7 +1,12 @@
 import type { Cart } from '@/entities/cart/model/types.ts'
-import type { AddToCartRequest, RemoveFromCartRequest, UpdateCartItemRequest } from '@/shared/api/types.ts'
+import type {
+  AddToCartRequest,
+  RemoveFromCartRequest,
+  UpdateCartItemRequest
+} from '@/shared/api/types.ts'
 import type {
   AddCartErrorResponse,
+  ApiErrorResponse,
   UpdateCartErrorResponse
 } from '@/shared/error/types.ts'
 
@@ -9,7 +14,7 @@ export async function getCartApi(): Promise<Cart> {
   const response = await fetch('/api/cart')
 
   if (!response.ok) {
-    throw new Error(response.statusText)
+    throw (await response.json()) as ApiErrorResponse
   }
 
   return response.json()
@@ -61,7 +66,7 @@ export async function removeCartItemApi(
   })
 
   if (!response.ok) {
-    throw new Error(response.statusText)
+    throw (await response.json()) as ApiErrorResponse
   }
 
   return response.json()

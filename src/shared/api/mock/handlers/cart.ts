@@ -1,32 +1,43 @@
 import { http, HttpResponse } from 'msw'
 import { fakeDb } from '@/shared/api/mock/fakeDb.ts'
+import { errorResponse } from '@/shared/api/mock/errorResponse.ts'
 
 export const cartHandlers = [
   http.get('/api/cart', () => {
-    return HttpResponse.json(fakeDb.getCart())
+    try {
+      return HttpResponse.json(fakeDb.getCart())
+    } catch (error) {
+      return errorResponse(error)
+    }
   }),
 
   http.post('/api/cart/add', async ({ request }) => {
-    const body = (await request.json()) as { productId: string; qty: number }
-
-    const cart = fakeDb.addToCart(body.productId, body.qty)
-
-    return HttpResponse.json(cart)
+    try {
+      const body = (await request.json()) as { productId: string; qty: number }
+      const cart = fakeDb.addToCart(body.productId, body.qty)
+      return HttpResponse.json(cart)
+    } catch (error) {
+      return errorResponse(error)
+    }
   }),
 
   http.post('/api/cart/update', async ({ request }) => {
-    const body = (await request.json()) as { productId: string; qty: number }
-
-    const cart = fakeDb.updateCartItem(body.productId, body.qty)
-
-    return HttpResponse.json(cart)
+    try {
+      const body = (await request.json()) as { productId: string; qty: number }
+      const cart = fakeDb.updateCartItem(body.productId, body.qty)
+      return HttpResponse.json(cart)
+    } catch (error) {
+      return errorResponse(error)
+    }
   }),
 
   http.post('/api/cart/remove', async ({ request }) => {
-    const body = (await request.json()) as { productId: string }
-
-    const cart = fakeDb.removeCartItem(body.productId)
-
-    return HttpResponse.json(cart)
+    try {
+      const body = (await request.json()) as { productId: string }
+      const cart = fakeDb.removeCartItem(body.productId)
+      return HttpResponse.json(cart)
+    } catch (error) {
+      return errorResponse(error)
+    }
   })
 ]

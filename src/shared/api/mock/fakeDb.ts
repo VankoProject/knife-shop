@@ -17,7 +17,7 @@ class FakeDataBase {
       items: [],
       subtotal: 0,
       currency: 'USD',
-      updatedAt: new Date().toISOString()
+      updatedAt: this.now()
     }
   }
 
@@ -25,8 +25,18 @@ class FakeDataBase {
     return this.products
   }
 
-  public productById(id: string): Product | undefined {
-    return this.products.find((product) => product.id == id)
+  public productById(id: string): Product {
+    const product = this.products.find((product) => product.id === id)
+
+    if (!product) {
+      throw {
+        status: 404,
+        error: 'PRODUCT_NOT_FOUND',
+        message: 'Product not found'
+      }
+    }
+
+    return product
   }
 
   public getCart(): Cart {
@@ -39,18 +49,19 @@ class FakeDataBase {
       0
     )
 
-    this.cart.updatedAt = new Date().toISOString()
+    this.cart.updatedAt = this.now()
   }
 
   public addToCart(productId: string, qty: number): Cart {
+    this.validateQty(qty)
+
     const product = this.productById(productId)
 
-    if (!product) {
-      throw { error: 'PRODUCT_NOT_FOUND', message: 'Product not found' }
-    }
-
     if (!product.inStock) {
-      throw { error: 'OUT_OF_STOCK' }
+      throw {
+        status: 409,
+        error: 'OUT_OF_STOCK'
+      }
     }
 
     const existingItem = this.cart.items.find(
@@ -76,29 +87,33 @@ class FakeDataBase {
   }
 
   public updateCartItem(productId: string, qty: number): Cart {
-    const item = this.cart.items.find((item) => item.productId === productId)
+    this.validateQty(qty)
 
-    if (!item) {
-      throw { error: 'PRODUCT_NOT_FOUND' }
+    const cartItem = this.cart.items.find(
+      (item) => item.productId === productId
+    )
+
+    if (!cartItem) {
+      throw {
+        status: 404,
+        error: 'PRODUCT_NOT_FOUND',
+        message: 'Product not found'
+      }
     }
 
-    if (qty <= 0) {
-      this.cart.items = this.cart.items.filter(
-        (item) => item.productId !== productId
-      )
-    } else {
-      item.qty = qty
+    const actualProduct = this.productById(productId)
+
+    if (cartItem.price !== actualProduct.price) {
+      throw {
+        status: 409,
+        error: 'PRICE_CHANGED',
+        newPrice: actualProduct.price
+      }
     }
+
+    cartItem.qty = qty
 
     this.recalculateCart()
-
-    return this.cart
-  }
-
-  public clearCart(): Cart {
-    this.cart.items = []
-    this.cart.subtotal = 0
-    this.cart.updatedAt = new Date().toISOString()
 
     return this.cart
   }
@@ -109,6 +124,14 @@ class FakeDataBase {
     )
 
     this.recalculateCart()
+
+    return this.cart
+  }
+
+  public clearCart(): Cart {
+    this.cart.items = []
+    this.cart.subtotal = 0
+    this.cart.updatedAt = this.now()
 
     return this.cart
   }
@@ -134,6 +157,19 @@ class FakeDataBase {
     this.clearCart()
 
     return { orderId }
+  }
+
+  private now(): string {
+    return new Date().toISOString()
+  }
+
+  private validateQty(qty: number): void {
+    if (qty <= 0) {
+      throw {
+        status: 400,
+        error: 'BAD_QTY'
+      }
+    }
   }
 }
 

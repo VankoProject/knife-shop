@@ -1,4 +1,5 @@
 import type { ProductsResponse } from '../model/api-types'
+import type { ApiError } from '@/shared/api/api-error.ts'
 
 export async function getProductsRequest(
   page: number,
@@ -9,7 +10,7 @@ export async function getProductsRequest(
   )
 
   if (!response.ok) {
-    throw new Error(response.statusText)
+    throw (await response.json()) as ApiError
   }
 
   return response.json()

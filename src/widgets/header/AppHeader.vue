@@ -16,7 +16,7 @@ function isActive(path: string): boolean {
 
 async function logout() {
   await loginStore.logout()
-  await router.push('/login')
+  await router.replace('/login')
 }
 </script>
 
@@ -104,15 +104,14 @@ async function logout() {
 
 .nav-button:hover,
 .logout-button:hover {
-  background: #f3f4f6;
+  background: var(--accent-hover);
 }
 
 .nav-button--active {
-  background: #dff0bf;
-  color: #1f2937;
+  background: var(--accent);
 }
 
 .logout-button {
-  border-color: #e5e7eb;
+  background: var(--bg-surface-secondary);
 }
 </style>

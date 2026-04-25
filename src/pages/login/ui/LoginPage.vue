@@ -27,7 +27,7 @@ watch(
   () => loginStore.isAuthenticated,
   async (isAuthenticated: boolean) => {
     if (isAuthenticated) {
-      await router.push('/catalog')
+      await router.replace('/catalog')
     }
   }
 )

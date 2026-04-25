@@ -51,7 +51,10 @@ function onAddToCart(): void {
         </p>
         <p
           class="product-content__stock"
-          :style="{ color: props.product.inStock ? 'green' : 'red' }"
+          :class="{
+            'product-content__stock--available': props.product.inStock,
+            'product-content__stock--unavailable': !props.product.inStock
+          }"
         >
           {{ props.product.inStock ? 'In stock' : 'Out of stock' }}
         </p>
@@ -75,7 +78,7 @@ function onAddToCart(): void {
   </section>
 </template>
 
-<style>
+<style scoped>
 .product-content__layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -112,6 +115,15 @@ function onAddToCart(): void {
   font-weight: 700;
   color: var(--success);
 }
+
+.product-content__stock--available {
+  color: var(--success);
+}
+
+.product-content__stock--unavailable {
+  color: var(--error);
+}
+
 .product-content__stock {
   font-size: 22px;
   font-weight: 500;

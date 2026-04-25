@@ -7,107 +7,85 @@ import {
   removeCartItemApi,
   updateCartItemApi
 } from '@/entities/cart/api/cartApi.ts'
+import type { ApiError } from '@/shared/api/api-error.ts'
+import {
+  ScreenUiState,
+  type UiState,
+  UiStateType
+} from '@/shared/model/ui-state/screen-ui-state.ts'
 
 export const useCartStore = defineStore('cart', () => {
-  const cart = ref<Cart | null>(null)
+  const cartResult = ref<UiState<Cart, ApiError>>(ScreenUiState.idle())
 
-  const isLoading = ref(false)
-  const errorMessage = ref<string | null>(null)
+  const cart = computed(() => {
+    return cartResult.value.type === UiStateType.Success
+      ? cartResult.value.data
+      : null
+  })
 
   const items = computed(() => cart.value?.items ?? [])
   const subtotal = computed(() => cart.value?.subtotal ?? 0)
   const currency = computed(() => cart.value?.currency ?? 'USD')
-  const isEmpty = computed(() => items.value.length === 0)
 
   function replaceCart(newCart: Cart): void {
-    cart.value = newCart
+    cartResult.value =
+      newCart.items.length === 0
+        ? ScreenUiState.empty()
+        : ScreenUiState.success(newCart)
   }
 
-  function setLoading(value: boolean): void {
-    isLoading.value = value
-  }
-
-  function setError(message: string | null): void {
-    errorMessage.value = message
+  function setError(error: ApiError): void {
+    cartResult.value = ScreenUiState.error(error)
   }
 
   function clearCart(): void {
-    cart.value = null
-  }
-
-  function clearError(): void {
-    errorMessage.value = null
+    cartResult.value = ScreenUiState.empty()
   }
 
   async function loadCart(): Promise<void> {
-    setLoading(true)
-    clearError()
+    cartResult.value = ScreenUiState.loading()
 
     try {
       const response = await getCartApi()
       replaceCart(response)
-    } catch {
-      setError('Failed to load cart')
-    } finally {
-      setLoading(false)
+    } catch (error) {
+      setError(error as ApiError)
     }
   }
 
   async function addToCart(productId: string, qty: number = 1): Promise<void> {
-    clearError()
-
     try {
       const response = await addToCartApi({ productId, qty })
       replaceCart(response)
     } catch (error) {
-      if (typeof error === 'object' && error !== null && 'error' in error) {
-        setError(String(error.error))
-        return
-      }
-
-      setError('Failed to add product to cart')
+      setError(error as ApiError)
     }
   }
 
   async function updateCartItem(productId: string, qty: number): Promise<void> {
-    clearError()
-
     try {
       const response = await updateCartItemApi({ productId, qty })
       replaceCart(response)
     } catch (error) {
-      if (typeof error == 'object' && error !== null && 'error' in error) {
-        setError(String(error.error))
-        return
-      }
-      setError('Failed to update cart item')
+      setError(error as ApiError)
     }
   }
 
   async function removeCartItem(productId: string): Promise<void> {
-    clearError()
-
     try {
       const response = await removeCartItemApi({ productId })
       replaceCart(response)
     } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message)
-        return
-      }
-
-      setError('Failed to remove cart item')
+      setError(error as ApiError)
     }
   }
 
   return {
+    cartResult,
     cart,
-    isLoading,
-    errorMessage,
     items,
     subtotal,
     currency,
-    isEmpty,
     replaceCart,
     clearCart,
     loadCart,

@@ -28,11 +28,7 @@ function onRemove(productId: string): void {
 
 <template>
   <section class="cart-content">
-    <div v-if="items.length === 0" class="cart-content__empty">
-      Cart is empty
-    </div>
-
-    <div v-else class="cart-content__list">
+    <div class="cart-content__list">
       <CartItemCard
         v-for="item in items"
         :key="item.productId"

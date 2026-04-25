@@ -1,17 +1,28 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useCartStore } from '@/entities/cart/model/store.ts'
-import type { Cart } from '@/entities/cart/model/types.ts'
 import { checkoutApi } from '@/features/checkout/cloud/checkoutApi.ts'
-import type { CheckoutRequest } from '@/features/checkout/model/types.ts'
+import type {
+  CheckoutRequest,
+  CheckoutResponse
+} from '@/features/checkout/model/types.ts'
+import {
+  type CheckoutErrorResponse,
+  isErrorCode
+} from '@/shared/error/types.ts'
+import {
+  ScreenUiState,
+  type UiState,
+  UiStateType
+} from '@/shared/model/ui-state/screen-ui-state.ts'
 
 export const useCheckoutStore = defineStore('checkout', () => {
   const name = ref('')
   const comment = ref('')
 
-  const isLoading = ref(false)
-  const errorMessage = ref<string | null>(null)
-  const orderId = ref<string | null>(null)
+  const checkoutResult = ref<UiState<CheckoutResponse, CheckoutErrorResponse>>(
+    ScreenUiState.idle()
+  )
 
   const cartStore = useCartStore()
 
@@ -20,7 +31,12 @@ export const useCheckoutStore = defineStore('checkout', () => {
   })
 
   const canSubmit = computed(() => {
-    return isFormValid.value && !cartStore.isEmpty && !isLoading.value
+    return (
+      isFormValid.value &&
+      cartStore.cartResult.type === UiStateType.Success &&
+      cartStore.cartResult.data.items.length > 0 &&
+      checkoutResult.value.type !== UiStateType.Loading
+    )
   })
 
   function setName(value: string): void {
@@ -31,89 +47,69 @@ export const useCheckoutStore = defineStore('checkout', () => {
     comment.value = value
   }
 
-  function clearError(): void {
-    errorMessage.value = null
-  }
-
-  function clearSuccess(): void {
-    orderId.value = null
-  }
-
   function resetForm(): void {
     name.value = ''
     comment.value = ''
   }
 
+  function resetCheckoutResult(): void {
+    checkoutResult.value = ScreenUiState.idle()
+  }
+
   async function submitOrder(): Promise<void> {
-    if (!cartStore.cart) {
-      errorMessage.value = 'Cart is empty'
-      return
-    }
-
     if (!isFormValid.value) {
-      errorMessage.value = 'Please enter your name'
+      checkoutResult.value = ScreenUiState.error({
+        error: 'INVALID_CUSTOMER',
+        message: 'Please enter your name'
+      })
       return
     }
 
-    isLoading.value = true
-    errorMessage.value = null
-    orderId.value = null
+    if (cartStore.cartResult.type !== UiStateType.Success) {
+      return
+    }
+
+    checkoutResult.value = ScreenUiState.loading()
 
     const request: CheckoutRequest = {
       customer: {
         name: name.value.trim(),
         comment: comment.value.trim() || undefined
       },
-      cart: cartStore.cart
+      cart: cartStore.cartResult.data
     }
 
     try {
       const response = await checkoutApi(request)
 
-      orderId.value = response.orderId
+      checkoutResult.value = ScreenUiState.success(response)
+
       cartStore.clearCart()
       resetForm()
     } catch (error) {
-      if (typeof error === 'object' && error !== null && 'error' in error) {
-        const checkoutError = error as {
-          error: string
-          serverCart?: Cart
-        }
+      const checkoutError = error as CheckoutErrorResponse
 
-        if (
-          checkoutError.error === 'CART_OUTDATED' &&
-          checkoutError.serverCart
-        ) {
-          cartStore.replaceCart(checkoutError.serverCart)
-          errorMessage.value = 'Cart was updated. Please review your order.'
-        } else if (checkoutError.error === 'INVALID_CUSTOMER') {
-          errorMessage.value = 'Please enter valid customer name.'
-        } else {
-          errorMessage.value = checkoutError.error
-        }
-
-        return
+      if (
+        isErrorCode(checkoutError, 'CART_OUTDATED') &&
+        checkoutError.serverCart
+      ) {
+        cartStore.replaceCart(checkoutError.serverCart)
       }
 
-      errorMessage.value = 'Failed to submit order'
-    } finally {
-      isLoading.value = false
+      checkoutResult.value = ScreenUiState.error(checkoutError)
     }
   }
 
   return {
     name,
     comment,
-    isLoading,
-    errorMessage,
-    orderId,
+    checkoutResult,
     isFormValid,
     canSubmit,
     setName,
     setComment,
-    clearError,
-    clearSuccess,
     resetForm,
+    resetCheckoutResult,
     submitOrder
   }
 })

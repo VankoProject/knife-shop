@@ -1,26 +1,35 @@
 <script setup lang="ts">
 import { useCheckoutStore } from '@/features/checkout/model/store.ts'
-import type { ButtonState } from '@/shared/ui/button/buttonState.ts'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
-import CheckoutForm from '@/widgets/сheckout-form/ui/CheckoutForm.vue'
+import CheckoutForm from '@/widgets/сheckout-form/CheckoutForm.vue'
 import { router } from '@/app/router'
+import { UiStateType } from '@/shared/model/ui-state/screen-ui-state.ts'
 
 const checkoutStore = useCheckoutStore()
 
-const { name, comment, isLoading, errorMessage, orderId, canSubmit } =
-  storeToRefs(checkoutStore)
+const { name, comment, checkoutResult, canSubmit } = storeToRefs(checkoutStore)
 
-const buttonState = computed<ButtonState>(() => {
-  if (isLoading.value) {
-    return 'loading'
-  }
-
-  if (!canSubmit.value) {
-    return 'disabled'
-  }
-
+const buttonState = computed(() => {
+  if (checkoutResult.value.type === UiStateType.Loading) return 'loading'
+  if (!canSubmit.value) return 'disabled'
   return 'idle'
+})
+
+const errorMessage = computed(() => {
+  if (checkoutResult.value.type === UiStateType.Error) {
+    return checkoutResult.value.error.message ?? 'Failed to submit order'
+  }
+
+  return null
+})
+
+const orderId = computed(() => {
+  if (checkoutResult.value.type === UiStateType.Success) {
+    return checkoutResult.value.data.orderId
+  }
+
+  return null
 })
 
 function onSubmit(): void {
@@ -28,7 +37,7 @@ function onSubmit(): void {
 }
 
 function onBackToCatalog(): void {
-  checkoutStore.clearSuccess()
+  checkoutStore.resetCheckoutResult()
   router.push('/catalog')
 }
 </script>

@@ -1,9 +1,10 @@
-import { http, HttpResponse } from 'msw'
-import { fakeDb } from '@/shared/api/mock/fakeDb.ts'
-import { errorResponse } from '@/shared/api/mock/errorResponse.ts'
+import { delay, http, HttpResponse } from 'msw'
+import { fakeDb } from '@/app/mock/fakeDb.ts'
+import { errorResponse } from '@/app/mock/errorResponse.ts'
 
 export const cartHandlers = [
-  http.get('/api/cart', () => {
+  http.get('/api/cart', async() => {
+    await delay(1500)
     try {
       return HttpResponse.json(fakeDb.getCart())
     } catch (error) {
@@ -12,6 +13,7 @@ export const cartHandlers = [
   }),
 
   http.post('/api/cart/add', async ({ request }) => {
+    await delay(500)
     try {
       const body = (await request.json()) as { productId: string; qty: number }
       const cart = fakeDb.addToCart(body.productId, body.qty)
@@ -32,6 +34,7 @@ export const cartHandlers = [
   }),
 
   http.post('/api/cart/remove', async ({ request }) => {
+    await delay(1500)
     try {
       const body = (await request.json()) as { productId: string }
       const cart = fakeDb.removeCartItem(body.productId)

@@ -12,7 +12,7 @@ app.use(router)
 
 async function enableMocking(): Promise<void> {
   if (import.meta.env.DEV) {
-    const { worker } = await import('@/shared/api/mock/browser')
+    const { worker } = await import('@/app/mock/browser.ts')
     await worker.start()
   }
 }

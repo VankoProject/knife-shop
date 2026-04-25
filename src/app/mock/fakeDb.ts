@@ -6,6 +6,8 @@ import type {
   CheckoutResponse
 } from '@/features/checkout/model/types.ts'
 import { orderIdGenerator } from '@/features/checkout/model/order.ts'
+import type { ProductFilters } from '@/entities/product/model/filters.ts'
+import type { ProductsResponse } from '@/entities/product/model/api-types.ts'
 
 class FakeDataBase {
   private readonly products: Product[]
@@ -21,8 +23,63 @@ class FakeDataBase {
     }
   }
 
-  public allProducts(): Product[] {
-    return this.products
+  public productsByFilters(filters: ProductFilters): ProductsResponse {
+    let result = [...this.products]
+
+    if (filters.q) {
+      const query = filters.q.trim().toLowerCase()
+
+      result = result.filter((product) => {
+        return product.name.toLowerCase().includes(query)
+      })
+    }
+
+    if (filters.min !== undefined) {
+      result = result.filter((product) => {
+        return product.price >= filters.min!
+      })
+    }
+
+    if (filters.max !== undefined) {
+      result = result.filter((product) => {
+        return product.price <= filters.max!
+      })
+    }
+
+    if (filters.inStock !== undefined) {
+      result = result.filter((product) => {
+        return product.inStock === filters.inStock
+      })
+    }
+
+    if (filters.rarity !== undefined) {
+      result = result.filter((product) => {
+        return product.rarity === filters.rarity
+      })
+    }
+
+    if (filters.sort) {
+      const sortMap = {
+        price_asc: (a: Product, b: Product) => a.price - b.price,
+        price_desc: (a: Product, b: Product) => b.price - a.price
+      }
+
+      result = result.sort(sortMap[filters.sort])
+    }
+
+    const total = result.length
+
+    const start = (filters.page - 1) * filters.limit
+    const end = start + filters.limit
+
+    const pageItems = result.slice(start, end)
+
+    return {
+      items: pageItems,
+      total,
+      page: filters.page,
+      limit: filters.limit
+    }
   }
 
   public productById(id: string): Product {

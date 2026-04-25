@@ -1,11 +1,12 @@
-import { http, HttpResponse } from 'msw'
+import { delay, http, HttpResponse } from 'msw'
 import type { CheckoutRequest } from '@/features/checkout/model/types.ts'
-import { fakeDb } from '@/shared/api/mock/fakeDb.ts'
-import { errorResponse } from '@/shared/api/mock/errorResponse.ts'
+import { fakeDb } from '@/app/mock/fakeDb.ts'
+import { errorResponse } from '@/app/mock/errorResponse.ts'
 
 export const checkoutHandlers = [
   http.post('/checkout', async ({ request }) => {
     try {
+      await delay(1500)
       const body = (await request.json()) as CheckoutRequest
       const response = fakeDb.checkout(body)
 

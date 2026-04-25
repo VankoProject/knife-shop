@@ -6,7 +6,7 @@ export const cartHandlers = [
   http.get('/api/cart', async() => {
     await delay(1500)
     try {
-      return HttpResponse.json(fakeDb.getCart())
+      return HttpResponse.json(fakeDb.cart.getCart())
     } catch (error) {
       return errorResponse(error)
     }
@@ -16,7 +16,7 @@ export const cartHandlers = [
     await delay(500)
     try {
       const body = (await request.json()) as { productId: string; qty: number }
-      const cart = fakeDb.addToCart(body.productId, body.qty)
+      const cart = fakeDb.cart.addToCart(body.productId, body.qty)
       return HttpResponse.json(cart)
     } catch (error) {
       return errorResponse(error)
@@ -26,7 +26,7 @@ export const cartHandlers = [
   http.post('/api/cart/update', async ({ request }) => {
     try {
       const body = (await request.json()) as { productId: string; qty: number }
-      const cart = fakeDb.updateCartItem(body.productId, body.qty)
+      const cart = fakeDb.cart.updateCartItem(body.productId, body.qty)
       return HttpResponse.json(cart)
     } catch (error) {
       return errorResponse(error)
@@ -37,7 +37,7 @@ export const cartHandlers = [
     await delay(1500)
     try {
       const body = (await request.json()) as { productId: string }
-      const cart = fakeDb.removeCartItem(body.productId)
+      const cart = fakeDb.cart.removeCartItem(body.productId)
       return HttpResponse.json(cart)
     } catch (error) {
       return errorResponse(error)

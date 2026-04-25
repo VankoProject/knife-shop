@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { useLoginStore } from '@/features/login/model/store.ts'
+import { useAuthStore } from '@/features/login/model/useAuthStore.ts'
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
-const loginStore = useLoginStore()
+const loginStore = useAuthStore()
 
 function goTo(path: string) {
   router.push(path)

@@ -5,13 +5,16 @@ import type { LoginRequest, LoginResponse } from '@/features/login/model/types'
 import {
   ScreenUiState,
   type UiState
-} from '@/shared/model/ui-state/screen-ui-state.ts'
-import type { ApiError } from '@/shared/api/api-error.ts'
-import { authRepository } from '@/features/login'
+} from '@/shared/model/ui-state/screen-ui-state'
+import type { AuthRepository } from './authRepository'
+import type { ApiError } from '@/shared/api/api-error'
+import { AuthRepositoryImpl } from '@/features/login/model/AuthRepositoryImpl'
 
-export const useLoginStore = defineStore('login', () => {
+export const useAuthStore = defineStore('login', () => {
   const token = ref<string | null>(null)
   const user = ref<User | null>(null)
+
+  const authRepository: AuthRepository = new AuthRepositoryImpl()
 
   const loginResult = ref<UiState<User, ApiError>>(ScreenUiState.idle())
 

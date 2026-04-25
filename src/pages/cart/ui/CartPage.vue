@@ -1,12 +1,23 @@
 <script setup lang="ts">
 import { useCartStore } from '@/entities/cart/model/store.ts'
-import { onMounted } from 'vue'
-import CartContent from '@/widgets/cart-content/ui/CartContent.vue'
-import CartSummary from '@/widgets/cart-summary/ui/CartSummary.vue'
+import { onMounted, ref } from 'vue'
+import CartContent from '@/widgets/cart-content/cart-screen-state/CartContent.vue'
+import CartSummary from '@/widgets/cart-content/CartSummary.vue'
 import { useRouter } from 'vue-router'
+import {
+  ScreenUiState,
+  type UiState,
+  UiStateType
+} from '@/shared/model/ui-state/screen-ui-state.ts'
+import CartLoadingState from '@/widgets/cart-content/cart-screen-state/CartLoadingState.vue'
+import type { ApiError } from '@/shared/api/api-error.ts'
+import type { CartItem } from '@/entities/cart/model/types.ts'
+import CartErrorState from '@/widgets/cart-content/cart-screen-state/CartErrorState.vue'
+import CartEmptyState from '@/widgets/cart-content/cart-screen-state/CartEmptyState.vue'
 
 const cartStore = useCartStore()
 const router = useRouter()
+const cartResult = ref<UiState<CartItem, ApiError>>(ScreenUiState.idle())
 
 onMounted(() => {
   cartStore.loadCart()
@@ -35,25 +46,38 @@ function onCheckout(): void {
 
 <template>
   <main class="cart-page">
-    <div v-if="cartStore.isLoading">Loading...</div>
+    <CartLoadingState
+      v-if="
+        cartStore.cartResult.type === UiStateType.Idle ||
+        cartStore.cartResult.type === UiStateType.Loading
+      "
+    />
 
-    <div v-else-if="cartStore.errorMessage">
-      {{ cartStore.errorMessage }}
-    </div>
+    <CartErrorState
+      v-else-if="cartStore.cartResult.type === UiStateType.Error"
+      :message="cartStore.cartResult.error.message ?? 'Failed to load cart'"
+      @retry="cartStore.loadCart"
+    />
 
-    <div v-else class="cart-page__layout">
+    <CartEmptyState
+      v-else-if="cartStore.cartResult.type === UiStateType.Empty"
+    />
+
+    <div
+      v-else-if="cartStore.cartResult.type === UiStateType.Success"
+      class="cart-page__layout"
+    >
       <CartContent
-        :items="cartStore.items"
+        :items="cartStore.cartResult.data.items"
         @increase="onIncrease"
         @decrease="onDecrease"
         @remove="onRemove"
       />
 
       <CartSummary
-        v-if="!cartStore.isEmpty"
         class="cart-page__summary"
-        :subtotal="cartStore.subtotal"
-        :currency="cartStore.currency"
+        :subtotal="cartStore.cartResult.data.subtotal"
+        :currency="cartStore.cartResult.data.currency"
         @checkout="onCheckout"
       />
     </div>

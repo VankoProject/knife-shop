@@ -6,9 +6,7 @@ interface Props {
   buttonState?: ButtonState
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  buttonState: 'idle'
-})
+const props = withDefaults(defineProps<Props>(), { buttonState: 'idle' })
 
 const emit = defineEmits<{
   (event: 'submit'): void
@@ -22,6 +20,7 @@ const emit = defineEmits<{
 
     <ActionButton
       label="Войти"
+      aria-label="Login"
       :state="props.buttonState"
       size="large"
       @press="emit('submit')"

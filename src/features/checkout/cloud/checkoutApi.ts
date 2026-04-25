@@ -2,6 +2,7 @@ import type {
   CheckoutRequest,
   CheckoutResponse
 } from '@/features/checkout/model/types.ts'
+import type { CheckoutErrorResponse } from '@/shared/error/types.ts'
 
 export async function checkoutApi(
   request: CheckoutRequest
@@ -17,8 +18,8 @@ export async function checkoutApi(
   const data = await response.json()
 
   if (!response.ok) {
-    throw data
+    throw data as CheckoutErrorResponse
   }
 
-  return data as Promise<CheckoutResponse>
+  return data as CheckoutResponse
 }

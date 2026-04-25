@@ -1,16 +1,27 @@
 <script setup lang="ts">
-import CatalogContent from '@/widgets/catalog-content/ui/CatalogContent.vue'
+import CatalogContent from '@/widgets/catalog-content/catalog-screen-state/content/CatalogContent.vue'
 import { computed, onMounted, ref } from 'vue'
-import type { Product } from '@/entities/product/model/types.ts'
 import { getProductsRequest } from '@/entities/product/api/getProducts.ts'
 import { useRouter } from 'vue-router'
 import { useCartStore } from '@/entities/cart/model/store.ts'
+import type { ProductsResponse } from '@/entities/product/model/api-types.ts'
+import type { ApiError } from '@/shared/api/api-error.ts'
+import CatalogLoadingState from '@/widgets/catalog-content/catalog-screen-state/CatalogLoadingState.vue'
+import CatalogErrorState from '@/widgets/catalog-content/catalog-screen-state/CatalogErrorState.vue'
+import CatalogEmptyState from '@/widgets/catalog-content/catalog-screen-state/CatalogEmptyState.vue'
+import {
+  ScreenUiState,
+  type UiState,
+  UiStateType
+} from '@/shared/model/ui-state/screen-ui-state.ts'
+import { RouteNames } from '@/shared/router/routes.ts'
 
 const router = useRouter()
 const cartStore = useCartStore()
-const products = ref<Product[]>([])
-const isLoading = ref(false)
-const errorMessage = ref<string | null>(null)
+
+const productsResult = ref<UiState<ProductsResponse, ApiError>>(
+  ScreenUiState.idle()
+)
 
 const currentPage = ref(1)
 const limit = ref(20)
@@ -21,17 +32,20 @@ const totalPages = computed(() => {
 })
 
 async function loadProducts(): Promise<void> {
-  isLoading.value = true
-  errorMessage.value = null
+  productsResult.value = ScreenUiState.loading()
 
   try {
     const response = await getProductsRequest(currentPage.value, limit.value)
-    products.value = response.items
     total.value = response.total
+
+    if (response.items.length === 0) {
+      productsResult.value = ScreenUiState.empty()
+      return
+    }
+
+    productsResult.value = ScreenUiState.success(response)
   } catch (error) {
-    errorMessage.value = 'Failed to load products'
-  } finally {
-    isLoading.value = false
+    productsResult.value = ScreenUiState.error(error as ApiError)
   }
 }
 
@@ -51,11 +65,16 @@ function onAddToCart(productId: string): void {
 
 function onOpenDetails(productId: string): void {
   router.push({
-    name: 'product',
+    name: RouteNames.PRODUCT,
     params: { id: productId }
   })
 }
 
+//todo: for future filters panel
+function onResetFilters(): void {
+  currentPage.value = 1
+  loadProducts()
+}
 onMounted(() => {
   loadProducts()
 })
@@ -63,11 +82,19 @@ onMounted(() => {
 
 <template>
   <main class="catalog-page">
-    <div v-if="isLoading">Loading...</div>
-    <div v-else-if="errorMessage">{{ errorMessage }}</div>
+    <CatalogLoadingState v-if="productsResult.type === UiStateType.Loading" />
+    <CatalogErrorState
+      v-else-if="productsResult.type === UiStateType.Error"
+      :message="productsResult.error.message ?? 'Failed to load products.'"
+      @retry="loadProducts"
+    />
+    <CatalogEmptyState
+      v-else-if="productsResult.type === UiStateType.Empty"
+      @reset="onResetFilters"
+    />
     <CatalogContent
-      v-else
-      :products="products"
+      v-else-if="productsResult.type === UiStateType.Success"
+      :products="productsResult.data.items"
       :current-page="currentPage"
       :total-pages="totalPages"
       @add-to-cart="onAddToCart"

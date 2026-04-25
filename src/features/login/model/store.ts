@@ -1,59 +1,61 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import type { User } from '@/entities/user'
+import type { LoginRequest, LoginResponse } from '@/features/login/model/types'
 import {
-  authRepository,
-  type LoginRequest,
-  type LoginResponse
-} from '@/features/login'
+  ScreenUiState,
+  type UiState
+} from '@/shared/model/ui-state/screen-ui-state.ts'
+import type { ApiError } from '@/shared/api/api-error.ts'
+import { authRepository } from '@/features/login'
 
 export const useLoginStore = defineStore('login', () => {
   const token = ref<string | null>(null)
   const user = ref<User | null>(null)
-  const isLoading = ref(false)
-  const error = ref<string | null>(null)
+
+  const loginResult = ref<UiState<User, ApiError>>(ScreenUiState.idle())
 
   const isAuthenticated = computed(() => token.value !== null)
 
   async function login(request: LoginRequest): Promise<void> {
-    isLoading.value = true
-    error.value = null
+    loginResult.value = ScreenUiState.loading()
 
     try {
       const response: LoginResponse = await authRepository.login(request)
 
       token.value = response.token
       user.value = response.user
-    } catch (e) {
-      error.value = 'Failed to login'
-    } finally {
-      isLoading.value = false
+      loginResult.value = ScreenUiState.success(response.user)
+    } catch {
+      loginResult.value = ScreenUiState.error({
+        error: 'LOGIN_FAILED',
+        message: 'Failed to login'
+      })
     }
   }
 
   async function logout(): Promise<void> {
-    isLoading.value = true
+    loginResult.value = ScreenUiState.loading()
 
     try {
       await authRepository.logout()
 
       token.value = null
       user.value = null
-    } catch (e) {
-      error.value = 'Failed to logout'
-    } finally {
-      isLoading.value = false
+      loginResult.value = ScreenUiState.idle()
+    } catch {
+      loginResult.value = ScreenUiState.error({
+        error: 'LOGOUT_FAILED',
+        message: 'Failed to logout'
+      })
     }
   }
 
   return {
     token,
     user,
-    isLoading,
-    error,
-
+    loginResult,
     isAuthenticated,
-
     login,
     logout
   }

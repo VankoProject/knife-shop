@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import CatalogPagination from './CatalogPagination.vue'
-import type { Product } from '@/entities/product/model/types'
-import CatalogProductGrid from '@/widgets/catalog-content/ui/CatalogProductGrid.vue'
+import type { Product } from '@/entities/product/model/types.ts'
+import CatalogProductGrid from '@/widgets/catalog-content/catalog-screen-state/content/CatalogProductGrid.vue'
 
 interface Props {
   products: Product[]

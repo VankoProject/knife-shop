@@ -10,6 +10,7 @@ import { UiStateType } from '@/shared/model/ui-state/screen-ui-state.ts'
 import { RouteNames } from '@/shared/router/routes.ts'
 import { useCatalogStore } from '@/features/catalog/model/store.ts'
 import CatalogFilterPanel from '@/features/catalog/ui/CatalogFilterPanel.vue'
+import { showSuccess } from '@/shared/lib/toast.ts'
 
 const router = useRouter()
 const cartStore = useCartStore()
@@ -26,6 +27,7 @@ function onChangePage(page: number): void {
 
 function onAddToCart(productId: string): void {
   cartStore.addToCart(productId, 1)
+  showSuccess('Added to cart')
 }
 
 function onOpenDetails(productId: string): void {

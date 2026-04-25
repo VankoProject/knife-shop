@@ -13,6 +13,7 @@ import type { ApiError } from '@/shared/api/api-error.ts'
 import ProductContent from '@/widgets/product-content/product-screen-state/ProductContent.vue'
 import ProductErrorState from '@/widgets/product-content/product-screen-state/ProductErrorState.vue'
 import ProductLoadingState from '@/widgets/product-content/product-screen-state/ProductLoadingState.vue'
+import { showSuccess } from '@/shared/lib/toast.ts'
 
 const route = useRoute()
 const cartState = useCartStore()
@@ -33,6 +34,7 @@ async function loadProduct(): Promise<void> {
 
 function onAddToCart(productId: string): void {
   cartState.addToCart(productId, 1)
+  showSuccess('Added to cart')
 }
 
 onMounted(() => {

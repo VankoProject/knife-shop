@@ -19,7 +19,7 @@ export const productHandlers = [
       page: parseNumber(url.searchParams.get('page')) ?? 1,
       limit: parseNumber(url.searchParams.get('limit')) ?? 20
     }
-    const response = fakeDb.productsByFilters(filters)
+    const response = fakeDb.products.productsByFilters(filters)
     return HttpResponse.json(response)
   }),
 
@@ -27,7 +27,7 @@ export const productHandlers = [
     await delay(1500)
     try {
       const productId = String(params.id)
-      const product = fakeDb.productById(productId)
+      const product = fakeDb.products.productById(productId)
 
       return HttpResponse.json(product)
     } catch (error) {

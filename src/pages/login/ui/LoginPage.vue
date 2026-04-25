@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { useLoginStore } from '@/features/login/model/store.ts'
+import { useAuthStore } from '@/features/login/model/useAuthStore.ts'
 import { computed, watch } from 'vue'
 import LoginCard from '@/features/login/ui/LoginCard.vue'
 import {
@@ -8,7 +8,7 @@ import {
 } from '@/shared/model/ui-state/screen-ui-state.ts'
 
 const router = useRouter()
-const loginStore = useLoginStore()
+const loginStore = useAuthStore()
 
 const buttonState = computed(() => {
   if (loginStore.loginResult.type === UiStateType.Loading) return 'loading'

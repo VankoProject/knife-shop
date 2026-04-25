@@ -8,7 +8,7 @@ export const checkoutHandlers = [
     try {
       await delay(1500)
       const body = (await request.json()) as CheckoutRequest
-      const response = fakeDb.checkout(body)
+      const response = fakeDb.checkout.checkout(body)
 
       return HttpResponse.json(response)
     } catch (error) {

@@ -31,6 +31,10 @@ export const useCartStore = defineStore('cart', () => {
         : ScreenUiState.success(newCart)
   }
 
+  function getCartSubtotal(cart: Cart): number {
+    return cart.items.reduce((sum, item) => sum + item.price * item.qty, 0)
+  }
+
   function setError(error: ApiError): void {
     cartResult.value = ScreenUiState.error(error)
   }
@@ -69,11 +73,27 @@ export const useCartStore = defineStore('cart', () => {
   }
 
   async function removeCartItem(productId: string): Promise<void> {
+    const previousCartResult = cartResult.value
+
+    if (cartResult.value.type === UiStateType.Success) {
+      const optimisticCart: Cart = {
+        ...cartResult.value.data,
+        items: cartResult.value.data.items.filter(
+          (item) => item.productId !== productId
+        )
+      }
+
+      replaceCart({
+        ...optimisticCart,
+        subtotal: getCartSubtotal(optimisticCart)
+      })
+    }
+
     try {
       const response = await removeCartItemApi({ productId })
       replaceCart(response)
-    } catch (error) {
-      setError(error as ApiError)
+    } catch {
+      cartResult.value = previousCartResult
     }
   }
 

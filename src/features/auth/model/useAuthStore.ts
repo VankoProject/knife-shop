@@ -1,14 +1,14 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import type { User } from '@/entities/user'
-import type { LoginRequest, LoginResponse } from '@/features/login/model/types'
-import {
-  ScreenUiState,
-  type UiState
-} from '@/shared/model/ui-state/screen-ui-state'
 import type { AuthRepository } from './authRepository'
-import type { ApiError } from '@/shared/api/api-error'
-import { AuthRepositoryImpl } from '@/features/login/model/AuthRepositoryImpl'
+import { AuthRepositoryImpl } from '@/features/auth/model/AuthRepositoryImpl'
+import type {
+  LoginRequest,
+  LoginResponse
+} from '@/features/auth/model/types.ts'
+import { ScreenUiState, type UiState } from '@/shared/model'
+import type { ApiError } from '@/shared/error'
 
 export const useAuthStore = defineStore('login', () => {
   const token = ref<string | null>(null)

@@ -1,18 +1,15 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import type { Cart } from '@/entities/cart/model/types.ts'
+
+import { ScreenUiState, type UiState, UiStateType } from '@/shared/model'
+import type { ApiError } from '@/shared/error'
 import {
   addToCartApi,
+  type Cart,
   getCartApi,
   removeCartItemApi,
   updateCartItemApi
-} from '@/entities/cart/api/cartApi.ts'
-import type { ApiError } from '@/shared/api/api-error.ts'
-import {
-  ScreenUiState,
-  type UiState,
-  UiStateType
-} from '@/shared/model/ui-state/screen-ui-state.ts'
+} from '@/entities/cart'
 
 export const useCartStore = defineStore('cart', () => {
   const cartResult = ref<UiState<Cart, ApiError>>(ScreenUiState.idle())

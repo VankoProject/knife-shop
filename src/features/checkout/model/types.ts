@@ -1,4 +1,4 @@
-import type { Cart } from '@/entities/cart/model/types.ts'
+import type { Cart } from '@/entities/cart'
 
 export interface CheckoutRequest {
   customer: {

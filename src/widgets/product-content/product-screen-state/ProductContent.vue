@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { Product } from '@/entities/product/model/types.ts'
 import ActionButton from '@/shared/ui/button/ActionButton.vue'
-import { formatPrice } from '@/shared/lib/formatPrice.ts'
 import type { ButtonState } from '@/shared/ui/button/buttonState.ts'
 import { computed } from 'vue'
+import { formatPrice } from '@/shared/lib'
 
 interface Props {
   product: Product

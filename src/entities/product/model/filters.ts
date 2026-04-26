@@ -1,4 +1,4 @@
-import type { Rarity } from '@/entities/product/model/types.ts'
+import type { Rarity } from '@/entities/product'
 
 export type ProductSort = 'price_asc' | 'price_desc'
 

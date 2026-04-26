@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppHeader from '@/widgets/header/AppHeader.vue'
 import { useRoute } from 'vue-router'
+import { AppHeader } from '@/widgets/header'
 
 const route = useRoute()
 </script>

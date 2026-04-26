@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { formatPrice } from '@/shared/lib/formatPrice.ts'
+
+import { formatPrice } from '@/shared/lib'
 
 interface Props {
   productId: string

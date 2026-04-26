@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import CatalogContent from '@/widgets/catalog-content/catalog-screen-state/content/CatalogContent.vue'
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useCartStore } from '@/entities/cart/model/store.ts'
-import CatalogLoadingState from '@/widgets/catalog-content/catalog-screen-state/CatalogLoadingState.vue'
-import CatalogErrorState from '@/widgets/catalog-content/catalog-screen-state/CatalogErrorState.vue'
-import CatalogEmptyState from '@/widgets/catalog-content/catalog-screen-state/CatalogEmptyState.vue'
-import { UiStateType } from '@/shared/model/ui-state/screen-ui-state.ts'
-import { RouteNames } from '@/shared/router/routes.ts'
-import { useCatalogStore } from '@/features/catalog/model/store.ts'
-import CatalogFilterPanel from '@/features/catalog/ui/CatalogFilterPanel.vue'
-import { showSuccess } from '@/shared/lib/toast.ts'
+import {
+  CatalogContent,
+  CatalogEmptyState,
+  CatalogErrorState,
+  CatalogLoadingState
+} from '@/widgets/catalog-content'
+import { UiStateType } from '@/shared/model'
+import { showSuccess } from '@/shared/lib'
+import { ROUTES } from '@/shared/constants'
+import { CatalogFilterPanel, useCatalogStore } from '@/features/catalog'
+import { useCartStore } from '@/features/cart'
 
 const router = useRouter()
 const cartStore = useCartStore()
@@ -32,7 +33,7 @@ function onAddToCart(productId: string): void {
 
 function onOpenDetails(productId: string): void {
   router.push({
-    name: RouteNames.PRODUCT,
+    name: ROUTES.PRODUCT,
     params: { id: productId }
   })
 }

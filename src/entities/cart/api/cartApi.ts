@@ -1,14 +1,14 @@
-import type { Cart } from '@/entities/cart/model/types.ts'
 import type {
   AddToCartRequest,
   RemoveFromCartRequest,
   UpdateCartItemRequest
-} from '@/shared/api/types.ts'
+} from '@/entities/cart/api/api-types.ts'
 import type {
   AddCartErrorResponse,
   ApiErrorResponse,
   UpdateCartErrorResponse
-} from '@/shared/error/types.ts'
+} from '@/shared/error'
+import type { Cart } from '@/entities/cart'
 
 export async function getCartApi(): Promise<Cart> {
   const response = await fetch('/api/cart')

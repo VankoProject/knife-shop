@@ -1,20 +1,14 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { useCartStore } from '@/entities/cart/model/store.ts'
-import { checkoutApi } from '@/features/checkout/cloud/checkoutApi.ts'
+import { checkoutApi } from '@/features/checkout/api/checkoutApi'
 import type {
   CheckoutRequest,
   CheckoutResponse
-} from '@/features/checkout/model/types.ts'
-import {
-  type CheckoutErrorResponse,
-  isErrorCode
-} from '@/shared/error/types.ts'
-import {
-  ScreenUiState,
-  type UiState,
-  UiStateType
-} from '@/shared/model/ui-state/screen-ui-state.ts'
+} from '@/features/checkout/model/types'
+import { ScreenUiState, type UiState, UiStateType } from '@/shared/model'
+import type { CheckoutErrorResponse } from '@/features/checkout/model/errors'
+import { isErrorCode } from '@/shared/error'
+import { useCartStore } from '@/features/cart'
 
 export const useCheckoutStore = defineStore('checkout', () => {
   const name = ref('')
@@ -56,6 +50,12 @@ export const useCheckoutStore = defineStore('checkout', () => {
     checkoutResult.value = ScreenUiState.idle()
   }
 
+  function finishCheckout(): void {
+    cartStore.clearCart()
+    resetCheckoutResult()
+    resetForm()
+  }
+
   async function submitOrder(): Promise<void> {
     if (!isFormValid.value) {
       checkoutResult.value = ScreenUiState.error({
@@ -81,11 +81,7 @@ export const useCheckoutStore = defineStore('checkout', () => {
 
     try {
       const response = await checkoutApi(request)
-
       checkoutResult.value = ScreenUiState.success(response)
-
-      cartStore.clearCart()
-      resetForm()
     } catch (error) {
       const checkoutError = error as CheckoutErrorResponse
 
@@ -108,8 +104,7 @@ export const useCheckoutStore = defineStore('checkout', () => {
     canSubmit,
     setName,
     setComment,
-    resetForm,
-    resetCheckoutResult,
-    submitOrder
+    submitOrder,
+    finishCheckout
   }
 })

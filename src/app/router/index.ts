@@ -1,13 +1,14 @@
 import {
   createRouter,
   createWebHashHistory,
-  type RouteRecordRaw,
+  type RouteRecordRaw
 } from 'vue-router'
+import { ROUTES } from '@/shared/constants'
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/login',
+    redirect: '/login'
   },
   {
     path: '/',
@@ -15,35 +16,35 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: 'login',
-        name: 'login',
-        component: () => import('@/pages/login/ui/LoginPage.vue'),
-        meta: { hideHeader: true },
+        name: ROUTES.LOGIN,
+        component: () => import('@/pages/login'),
+        meta: { hideHeader: true }
       },
       {
         path: 'catalog',
-        name: 'catalog',
-        component: () => import('@/pages/catalog/ui/CatalogPage.vue'),
+        name: ROUTES.CATALOG,
+        component: () => import('@/pages/catalog')
       },
       {
         path: 'product/:id',
-        name: 'product',
-        component: () => import('@/pages/product/ui/ProductPage.vue'),
+        name: ROUTES.PRODUCT,
+        component: () => import('@/pages/product')
       },
       {
         path: 'cart',
-        name: 'cart',
-        component: () => import('@/pages/cart/ui/CartPage.vue'),
+        name: ROUTES.CART,
+        component: () => import('@/pages/cart')
       },
       {
         path: 'checkout',
-        name: 'checkout',
-        component: () => import('@/pages/checkout/ui/CheckoutPage.vue'),
-      },
-    ],
-  },
+        name: ROUTES.CHECKOUT,
+        component: () => import('@/pages/checkout')
+      }
+    ]
+  }
 ]
 
 export const router = createRouter({
   history: createWebHashHistory(),
-  routes,
+  routes
 })

@@ -1,4 +1,4 @@
-import type { Product, Rarity } from '@/entities/product/model/types.ts'
+import type { Product, Rarity } from '@/entities/product'
 
 const productName = [
   'Crimson Edge',

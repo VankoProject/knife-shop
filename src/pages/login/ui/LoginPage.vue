@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/features/login/model/useAuthStore.ts'
 import { computed, watch } from 'vue'
-import LoginCard from '@/features/login/ui/LoginCard.vue'
-import {
-  UiStateType
-} from '@/shared/model/ui-state/screen-ui-state.ts'
+import { LoginCard, useAuthStore } from '@/features/auth'
+import { UiStateType } from '@/shared/model'
 
 const router = useRouter()
 const loginStore = useAuthStore()

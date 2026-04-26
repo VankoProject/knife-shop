@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import ActionButton from '@/shared/ui/button/ActionButton.vue'
-import type { ButtonState } from '@/shared/ui/button/buttonState.ts'
+import { ActionButton, type ButtonState } from '@/shared/ui'
 
 interface Props {
   name: string
   comment: string
   errorMessage: string | null
-  orderId: string | null
   buttonState: ButtonState
 }
 
@@ -16,7 +14,6 @@ const emit = defineEmits<{
   (event: 'update:name', value: string): void
   (event: 'update:comment', value: string): void
   (event: 'submit'): void
-  (event: 'backToCatalog'): void
 }>()
 
 function onNameInput(event: Event): void {
@@ -29,12 +26,8 @@ function onCommentInput(event: Event): void {
   emit('update:comment', target.value)
 }
 
-function onAction(): void {
-  if (props.orderId) {
-    emit('backToCatalog')
-  } else {
-    emit('submit')
-  }
+function onSubmit(): void {
+  emit('submit')
 }
 </script>
 
@@ -68,16 +61,10 @@ function onAction(): void {
       {{ props.errorMessage }}
     </p>
 
-    <div v-if="props.orderId">
-      <p class="checkout-form__success-title">Order placed successfully</p>
-      <p class="checkout-form__success">Order created: {{ props.orderId }}</p>
-    </div>
-
     <ActionButton
-      :label="props.orderId ? 'Back to catalog' : 'Place order'"
-      :state="props.orderId ? 'idle' : props.buttonState"
-      :type="props.orderId ? 'button' : 'submit'"
-      @press="onAction"
+      label="Place order"
+      :state="props.buttonState"
+      type="submit"
     />
   </form>
 </template>
@@ -121,11 +108,6 @@ function onAction(): void {
 
 .checkout-form__error {
   color: var(--error);
-  font-size: 14px;
-}
-
-.checkout-form__success {
-  color: var(--success);
   font-size: 14px;
 }
 </style>

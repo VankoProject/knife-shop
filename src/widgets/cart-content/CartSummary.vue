@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { formatPrice } from '@/shared/lib/formatPrice.ts'
+import { formatPrice } from '@/shared/lib'
 
 interface Props {
   subtotal: number
@@ -13,6 +13,7 @@ const emit = defineEmits<{
 }>()
 
 function onCheckout(): void {
+  console.log('checkout clicked')
   emit('checkout')
 }
 </script>
@@ -22,10 +23,10 @@ function onCheckout(): void {
     <div class="cart-summary__info">
       <p class="cart-summary__row">
         <span class="cart-summary__label">Subtotal:</span>
-        <span class="cart-summary__value">{{ formatPrice(props.subtotal, props.currency) }}</span>
+        <span class="cart-summary__value">
+          {{ formatPrice(props.subtotal, props.currency) }}
+        </span>
       </p>
-
-
     </div>
 
     <button

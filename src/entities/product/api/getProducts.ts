@@ -1,6 +1,6 @@
 import type { ProductsResponse } from '../model/api-types'
-import type { ProductFilters } from '@/entities/product/model/filters.ts'
-import type { ProductErrorResponse } from '@/shared/error/types.ts'
+import type { ProductFilters } from '@/entities/product/model/filters'
+import type { ProductErrorResponse } from '@/shared/error'
 
 export async function getProductsRequest(
   filters: ProductFilters

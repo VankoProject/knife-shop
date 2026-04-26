@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AppLoadingState from '@/shared/ui/screen-state/AppLoadingState.vue'
+import { AppLoadingState } from '@/shared/ui'
 </script>
 
 <template>

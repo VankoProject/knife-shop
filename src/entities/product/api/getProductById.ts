@@ -1,5 +1,5 @@
-import type { Product } from '@/entities/product/model/types.ts'
-import type { ProductErrorResponse } from '@/shared/error/types.ts'
+import type { ProductErrorResponse } from '@/shared/error'
+import type { Product } from '@/entities/product'
 
 export async function getProductByIdRequest(id: string): Promise<Product> {
   const response: Response = await fetch(`/api/products/${id}`)

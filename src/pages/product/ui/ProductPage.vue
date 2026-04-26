@@ -1,45 +1,34 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { computed, onMounted, ref } from 'vue'
-import { getProductByIdRequest } from '@/entities/product/api/getProductById.ts'
-import { useCartStore } from '@/entities/cart/model/store.ts'
+import { computed, onMounted } from 'vue'
 import {
-  ScreenUiState,
-  type UiState,
-  UiStateType
-} from '@/shared/model/ui-state/screen-ui-state.ts'
-import type { Product } from '@/entities/product/model/types.ts'
-import type { ApiError } from '@/shared/api/api-error.ts'
-import ProductContent from '@/widgets/product-content/product-screen-state/ProductContent.vue'
-import ProductErrorState from '@/widgets/product-content/product-screen-state/ProductErrorState.vue'
-import ProductLoadingState from '@/widgets/product-content/product-screen-state/ProductLoadingState.vue'
-import { showSuccess } from '@/shared/lib/toast.ts'
+  ProductContent,
+  ProductErrorState,
+  ProductLoadingState
+} from '@/widgets/product-content'
+import { UiStateType } from '@/shared/model'
+import { showSuccess } from '@/shared/lib'
+import { storeToRefs } from 'pinia'
+import { useCartStore } from '@/features/cart'
+import { useProductStore } from '@/features/product'
 
 const route = useRoute()
-const cartState = useCartStore()
+const productStore = useProductStore()
+const cartStore = useCartStore()
 const productId = computed(() => String(route.params.id))
 
-const productResult = ref<UiState<Product, ApiError>>(ScreenUiState.idle())
-
-async function loadProduct(): Promise<void> {
-  productResult.value = ScreenUiState.loading()
-
-  try {
-    const product = await getProductByIdRequest(productId.value)
-    productResult.value = ScreenUiState.success(product)
-  } catch (error) {
-    productResult.value = ScreenUiState.error(error as ApiError)
-  }
-}
+const { productResult } = storeToRefs(productStore)
 
 function onAddToCart(productId: string): void {
-  cartState.addToCart(productId, 1)
+  cartStore.addToCart(productId, 1)
   showSuccess('Added to cart')
 }
 
-onMounted(() => {
-  loadProduct()
-})
+function loadProduct(): void {
+  productStore.loadProduct(productId.value)
+}
+
+onMounted(loadProduct)
 </script>
 
 <template>

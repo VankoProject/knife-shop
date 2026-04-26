@@ -1,23 +1,19 @@
 <script setup lang="ts">
-import { useCartStore } from '@/entities/cart/model/store.ts'
-import { onMounted, ref } from 'vue'
-import CartContent from '@/widgets/cart-content/cart-screen-state/CartContent.vue'
-import CartSummary from '@/widgets/cart-content/CartSummary.vue'
+import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { UiStateType } from '@/shared/model'
+import { ROUTES } from '@/shared/constants'
 import {
-  ScreenUiState,
-  type UiState,
-  UiStateType
-} from '@/shared/model/ui-state/screen-ui-state.ts'
-import CartLoadingState from '@/widgets/cart-content/cart-screen-state/CartLoadingState.vue'
-import type { ApiError } from '@/shared/api/api-error.ts'
-import type { CartItem } from '@/entities/cart/model/types.ts'
-import CartErrorState from '@/widgets/cart-content/cart-screen-state/CartErrorState.vue'
-import CartEmptyState from '@/widgets/cart-content/cart-screen-state/CartEmptyState.vue'
+  CartContent,
+  CartEmptyState,
+  CartErrorState,
+  CartLoadingState,
+  CartSummary
+} from '@/widgets/cart-content'
+import { useCartStore } from '@/features/cart'
 
 const cartStore = useCartStore()
 const router = useRouter()
-const cartResult = ref<UiState<CartItem, ApiError>>(ScreenUiState.idle())
 
 onMounted(() => {
   cartStore.loadCart()
@@ -40,7 +36,9 @@ function onRemove(productId: string): void {
 }
 
 function onCheckout(): void {
-  router.push('/checkout')
+  router.push({
+    name: ROUTES.CHECKOUT
+  })
 }
 </script>
 

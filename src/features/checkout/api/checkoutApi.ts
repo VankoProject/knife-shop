@@ -1,8 +1,8 @@
+import type { CheckoutErrorResponse } from '@/features/checkout/model/errors'
 import type {
   CheckoutRequest,
   CheckoutResponse
-} from '@/features/checkout/model/types.ts'
-import type { CheckoutErrorResponse } from '@/shared/error/types.ts'
+} from '@/features/checkout/model/types'
 
 export async function checkoutApi(
   request: CheckoutRequest

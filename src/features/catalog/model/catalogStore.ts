@@ -1,17 +1,17 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import type { ProductsResponse } from '@/entities/product/model/api-types'
-import type { ApiError } from '@/shared/api/api-error'
 import {
   ScreenUiState,
   type UiState,
   UiStateType
 } from '@/shared/model/ui-state/screen-ui-state'
+import type { ApiError } from '@/shared/error'
 import {
   DEFAULT_PRODUCT_FILTERS,
-  type ProductFilters
-} from '@/entities/product/model/filters'
-import { getProductsRequest } from '@/entities/product/api/getProducts.ts'
+  getProductsRequest,
+  type ProductFilters,
+  type ProductsResponse
+} from '@/entities/product'
 
 export const useCatalogStore = defineStore('catalog', () => {
   const productsResult = ref<UiState<ProductsResponse, ApiError>>(

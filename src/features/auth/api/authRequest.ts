@@ -1,4 +1,7 @@
-import type { LoginRequest, LoginResponse } from '@/features/login'
+import type {
+  LoginRequest,
+  LoginResponse
+} from '@/features/auth/model/types.ts'
 
 export async function loginRequest(
   request: LoginRequest

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import AppErrorState from '@/shared/ui/screen-state/AppErrorState.vue'
+
+import { AppErrorState } from '@/shared/ui'
 
 interface Props {
   message: string

@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import ActionButton from '@/shared/ui/button/ActionButton.vue'
 import ProductCardMedia from './ProductCardMedia.vue'
 import ProductTags from './ProductTags.vue'
 
-import type { Product } from '@/entities/product/model/types.ts'
-import type { ButtonState } from '@/shared/ui/button/buttonState.ts'
-import { formatPrice } from '@/shared/lib/formatPrice.ts'
+import { ActionButton, type ButtonState } from '@/shared/ui'
+import { formatPrice } from '@/shared/lib'
+import type { Product } from '@/entities/product'
 
 interface Props {
   product: Product

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Loader from '@/shared/ui/loader/Loader.vue'
+import { Loader } from '@/shared/ui'
 </script>
 
 <template>

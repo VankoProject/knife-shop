@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import type {
-  ProductFilters,
-  ProductSort
-} from '@/entities/product/model/filters'
 import {
   PRODUCT_RARITIES,
+  type ProductFilters,
+  type ProductSort,
   type Rarity
-} from '@/entities/product/model/types.ts'
+} from '@/entities/product'
 
 interface Props {
   filters: ProductFilters

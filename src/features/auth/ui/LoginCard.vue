@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import ActionButton from '@/shared/ui/button/ActionButton.vue'
-import type { ButtonState } from '@/shared/ui/button/buttonState.ts'
+import { ActionButton, type ButtonState } from '@/shared/ui'
 
 interface Props {
   buttonState?: ButtonState

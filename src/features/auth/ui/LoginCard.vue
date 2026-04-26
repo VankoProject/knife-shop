@@ -14,11 +14,11 @@ const emit = defineEmits<{
 
 <template>
   <section class="login-card">
-    <p class="login-card_title">Добро пожаловать</p>
+    <p class="login-card_title">Sign in to Knife Shop</p>
     <div class="spacer" />
 
     <ActionButton
-      label="Войти"
+      label="Sign in"
       aria-label="Login"
       :state="props.buttonState"
       size="large"

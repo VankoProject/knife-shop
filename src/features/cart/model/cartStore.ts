@@ -64,11 +64,32 @@ export const useCartStore = defineStore('cart', () => {
   }
 
   async function updateCartItem(productId: string, qty: number): Promise<void> {
+    const previousCartResult = cartResult.value
+
+    if (cartResult.value.type === UiStateType.Success) {
+      const optimisticCart: Cart = {
+        ...cartResult.value.data,
+        items: cartResult.value.data.items.map((item) =>
+          item.productId === productId
+            ? {
+                ...item,
+                qty
+              }
+            : item
+        )
+      }
+
+      replaceCart({
+        ...optimisticCart,
+        subtotal: getCartSubtotal(optimisticCart)
+      })
+    }
+
     try {
       const response = await updateCartItemApi({ productId, qty })
       replaceCart(response)
-    } catch (error) {
-      setError(error as ApiError)
+    } catch {
+      cartResult.value = previousCartResult
     }
   }
 

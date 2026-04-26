@@ -55,11 +55,38 @@ export const useCartStore = defineStore('cart', () => {
   }
 
   async function addToCart(productId: string, qty: number = 1): Promise<void> {
+    const previousCartResult = cartResult.value
+
+    if (cartResult.value.type === UiStateType.Success) {
+      const existingItem = cartResult.value.data.items.find(
+        (item) => item.productId === productId
+      )
+
+      if (existingItem) {
+        const optimisticCart: Cart = {
+          ...cartResult.value.data,
+          items: cartResult.value.data.items.map((item) =>
+            item.productId === productId
+              ? {
+                  ...item,
+                  qty: item.qty + qty
+                }
+              : item
+          )
+        }
+
+        replaceCart({
+          ...optimisticCart,
+          subtotal: getCartSubtotal(optimisticCart)
+        })
+      }
+    }
+
     try {
       const response = await addToCartApi({ productId, qty })
       replaceCart(response)
-    } catch (error) {
-      setError(error as ApiError)
+    } catch {
+      cartResult.value = previousCartResult
     }
   }
 

@@ -4,12 +4,15 @@ import '../style.css'
 import App from './App.vue'
 import { router } from './router'
 import 'vue3-toastify/dist/index.css'
+import { initLiveUpdates } from '@/app/live-updates/initLiveUpdates'
 
 const app = createApp(App)
 const pinia = createPinia()
 
 app.use(pinia)
 app.use(router)
+
+initLiveUpdates()
 
 async function enableMocking(): Promise<void> {
   if (import.meta.env.DEV) {

@@ -12,11 +12,11 @@ export interface ProductUpdatedEvent {
     }
 }
 
-export interface CarSyncedEvent {
+export interface CartSyncedEvent {
     type: 'cart.synced'
     data: {
         cart: Cart
     }
 }
 
-export type WsEvent = ProductUpdatedEvent | CarSyncedEvent
+export type WsEvent = ProductUpdatedEvent | CartSyncedEvent

@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { ScreenUiState, type UiState } from '@/shared/model'
+import { ScreenUiState, type UiState, UiStateType } from '@/shared/model'
 import type { ApiError } from '@/shared/error'
+import type { ProductUpdatedEvent } from '@/shared/ws'
 import { getProductByIdRequest, type Product } from '@/entities/product'
 
 export const useProductStore = defineStore('product', () => {
@@ -18,8 +19,26 @@ export const useProductStore = defineStore('product', () => {
     }
   }
 
+  function applyProductLiveUpdate(
+    productId: string,
+    changes: ProductUpdatedEvent['data']['changes']
+  ): void {
+    if (
+      productResult.value.type !== UiStateType.Success ||
+      productResult.value.data.id !== productId
+    ) {
+      return
+    }
+
+    productResult.value = ScreenUiState.success({
+      ...productResult.value.data,
+      ...changes
+    })
+  }
+
   return {
     productResult,
-    loadProduct
+    loadProduct,
+    applyProductLiveUpdate
   }
 })

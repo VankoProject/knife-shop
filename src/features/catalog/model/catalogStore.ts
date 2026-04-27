@@ -6,6 +6,7 @@ import {
   UiStateType
 } from '@/shared/model/ui-state/screen-ui-state'
 import type { ApiError } from '@/shared/error'
+import type { ProductUpdatedEvent } from '@/shared/ws'
 import {
   DEFAULT_PRODUCT_FILTERS,
   getProductsRequest,
@@ -75,6 +76,25 @@ export const useCatalogStore = defineStore('catalog', () => {
     loadProducts()
   }
 
+  function applyProductLiveUpdate(
+    productId: string,
+    changes: ProductUpdatedEvent['data']['changes']
+  ): void {
+    if (productsResult.value.type !== UiStateType.Success) return
+
+    productsResult.value = ScreenUiState.success({
+      ...productsResult.value.data,
+      items: productsResult.value.data.items.map((product) =>
+        product.id === productId
+          ? {
+              ...product,
+              ...changes
+            }
+          : product
+      )
+    })
+  }
+
   return {
     productsResult,
     filters,
@@ -82,6 +102,7 @@ export const useCatalogStore = defineStore('catalog', () => {
     loadProducts,
     setFilters,
     setPage,
-    resetFilters
+    resetFilters,
+    applyProductLiveUpdate
   }
 })

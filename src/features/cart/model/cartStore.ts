@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 
 import { ScreenUiState, type UiState, UiStateType } from '@/shared/model'
 import type { ApiError } from '@/shared/error'
+import type { ProductUpdatedEvent } from '@/shared/ws'
 import {
   addToCartApi,
   type Cart,
@@ -42,6 +43,31 @@ export const useCartStore = defineStore('cart', () => {
 
   function clearCart(): void {
     cartResult.value = ScreenUiState.empty()
+  }
+
+  function applyProductLiveUpdate(
+    productId: string,
+    changes: ProductUpdatedEvent['data']['changes']
+  ): void {
+    if (cartResult.value.type !== UiStateType.Success) return
+
+    const updatedCart: Cart = {
+      ...cartResult.value.data,
+      items: cartResult.value.data.items.map((item) =>
+        item.productId === productId
+          ? {
+              ...item,
+              price: changes.price ?? item.price,
+              inStock: changes.inStock ?? item.inStock
+            }
+          : item
+      )
+    }
+
+    replaceCart({
+      ...updatedCart,
+      subtotal: getCartSubtotal(updatedCart)
+    })
   }
 
   async function loadCart(): Promise<void> {
@@ -169,6 +195,7 @@ export const useCartStore = defineStore('cart', () => {
     currency,
     replaceCart,
     clearCart,
+    applyProductLiveUpdate,
     loadCart,
     addToCart,
     updateCartItem,

@@ -13,6 +13,7 @@ import {
 
 export const useCartStore = defineStore('cart', () => {
   const cartResult = ref<UiState<Cart, ApiError>>(ScreenUiState.idle())
+  let cartMutationRequestId = 0
 
   const cart = computed(() => {
     return cartResult.value.type === UiStateType.Success
@@ -55,6 +56,7 @@ export const useCartStore = defineStore('cart', () => {
   }
 
   async function addToCart(productId: string, qty: number = 1): Promise<void> {
+    const requestId = ++cartMutationRequestId
     const previousCartResult = cartResult.value
 
     if (cartResult.value.type === UiStateType.Success) {
@@ -84,13 +86,18 @@ export const useCartStore = defineStore('cart', () => {
 
     try {
       const response = await addToCartApi({ productId, qty })
-      replaceCart(response)
+      if (requestId === cartMutationRequestId) {
+        replaceCart(response)
+      }
     } catch {
-      cartResult.value = previousCartResult
+      if (requestId === cartMutationRequestId) {
+        cartResult.value = previousCartResult
+      }
     }
   }
 
   async function updateCartItem(productId: string, qty: number): Promise<void> {
+    const requestId = ++cartMutationRequestId
     const previousCartResult = cartResult.value
 
     if (cartResult.value.type === UiStateType.Success) {
@@ -114,13 +121,18 @@ export const useCartStore = defineStore('cart', () => {
 
     try {
       const response = await updateCartItemApi({ productId, qty })
-      replaceCart(response)
+      if (requestId === cartMutationRequestId) {
+        replaceCart(response)
+      }
     } catch {
-      cartResult.value = previousCartResult
+      if (requestId === cartMutationRequestId) {
+        cartResult.value = previousCartResult
+      }
     }
   }
 
   async function removeCartItem(productId: string): Promise<void> {
+    const requestId = ++cartMutationRequestId
     const previousCartResult = cartResult.value
 
     if (cartResult.value.type === UiStateType.Success) {
@@ -139,9 +151,13 @@ export const useCartStore = defineStore('cart', () => {
 
     try {
       const response = await removeCartItemApi({ productId })
-      replaceCart(response)
+      if (requestId === cartMutationRequestId) {
+        replaceCart(response)
+      }
     } catch {
-      cartResult.value = previousCartResult
+      if (requestId === cartMutationRequestId) {
+        cartResult.value = previousCartResult
+      }
     }
   }
 

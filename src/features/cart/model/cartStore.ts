@@ -13,6 +13,7 @@ import {
 
 export const useCartStore = defineStore('cart', () => {
   const cartResult = ref<UiState<Cart, ApiError>>(ScreenUiState.idle())
+  let cartMutationRequestId = 0
 
   const cart = computed(() => {
     return cartResult.value.type === UiStateType.Success
@@ -29,6 +30,10 @@ export const useCartStore = defineStore('cart', () => {
       newCart.items.length === 0
         ? ScreenUiState.empty()
         : ScreenUiState.success(newCart)
+  }
+
+  function getCartSubtotal(cart: Cart): number {
+    return cart.items.reduce((sum, item) => sum + item.price * item.qty, 0)
   }
 
   function setError(error: ApiError): void {
@@ -51,29 +56,108 @@ export const useCartStore = defineStore('cart', () => {
   }
 
   async function addToCart(productId: string, qty: number = 1): Promise<void> {
+    const requestId = ++cartMutationRequestId
+    const previousCartResult = cartResult.value
+
+    if (cartResult.value.type === UiStateType.Success) {
+      const existingItem = cartResult.value.data.items.find(
+        (item) => item.productId === productId
+      )
+
+      if (existingItem) {
+        const optimisticCart: Cart = {
+          ...cartResult.value.data,
+          items: cartResult.value.data.items.map((item) =>
+            item.productId === productId
+              ? {
+                  ...item,
+                  qty: item.qty + qty
+                }
+              : item
+          )
+        }
+
+        replaceCart({
+          ...optimisticCart,
+          subtotal: getCartSubtotal(optimisticCart)
+        })
+      }
+    }
+
     try {
       const response = await addToCartApi({ productId, qty })
-      replaceCart(response)
-    } catch (error) {
-      setError(error as ApiError)
+      if (requestId === cartMutationRequestId) {
+        replaceCart(response)
+      }
+    } catch {
+      if (requestId === cartMutationRequestId) {
+        cartResult.value = previousCartResult
+      }
     }
   }
 
   async function updateCartItem(productId: string, qty: number): Promise<void> {
+    const requestId = ++cartMutationRequestId
+    const previousCartResult = cartResult.value
+
+    if (cartResult.value.type === UiStateType.Success) {
+      const optimisticCart: Cart = {
+        ...cartResult.value.data,
+        items: cartResult.value.data.items.map((item) =>
+          item.productId === productId
+            ? {
+                ...item,
+                qty
+              }
+            : item
+        )
+      }
+
+      replaceCart({
+        ...optimisticCart,
+        subtotal: getCartSubtotal(optimisticCart)
+      })
+    }
+
     try {
       const response = await updateCartItemApi({ productId, qty })
-      replaceCart(response)
-    } catch (error) {
-      setError(error as ApiError)
+      if (requestId === cartMutationRequestId) {
+        replaceCart(response)
+      }
+    } catch {
+      if (requestId === cartMutationRequestId) {
+        cartResult.value = previousCartResult
+      }
     }
   }
 
   async function removeCartItem(productId: string): Promise<void> {
+    const requestId = ++cartMutationRequestId
+    const previousCartResult = cartResult.value
+
+    if (cartResult.value.type === UiStateType.Success) {
+      const optimisticCart: Cart = {
+        ...cartResult.value.data,
+        items: cartResult.value.data.items.filter(
+          (item) => item.productId !== productId
+        )
+      }
+
+      replaceCart({
+        ...optimisticCart,
+        subtotal: getCartSubtotal(optimisticCart)
+      })
+    }
+
     try {
       const response = await removeCartItemApi({ productId })
-      replaceCart(response)
-    } catch (error) {
-      setError(error as ApiError)
+      if (requestId === cartMutationRequestId) {
+        replaceCart(response)
+      }
+    } catch {
+      if (requestId === cartMutationRequestId) {
+        cartResult.value = previousCartResult
+      }
     }
   }
 

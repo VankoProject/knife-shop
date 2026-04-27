@@ -1,4 +1,4 @@
-import type { LoginRequest, LoginResponse } from '@/features/login'
+import type { LoginRequest, LoginResponse } from '@/features/auth'
 
 export class AuthMockDatabase {
   public login(request: LoginRequest): LoginResponse {

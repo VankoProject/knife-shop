@@ -1,0 +1,56 @@
+<script setup lang="ts">
+import { ActionButton, type ButtonState } from '@/shared/ui'
+
+interface Props {
+  buttonState?: ButtonState
+}
+
+const props = withDefaults(defineProps<Props>(), { buttonState: 'idle' })
+
+const emit = defineEmits<{
+  (event: 'submit'): void
+}>()
+</script>
+
+<template>
+  <section class="login-card">
+    <p class="login-card_title">Sign in to Knife Shop</p>
+    <div class="spacer" />
+
+    <ActionButton
+      label="Sign in"
+      aria-label="Login"
+      :state="props.buttonState"
+      size="large"
+      @press="emit('submit')"
+    />
+  </section>
+</template>
+
+<style scoped>
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 32px;
+  border-radius: 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.login-card_title {
+  margin: 0 0 24px;
+  text-align: center;
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.spacer {
+  flex: 1;
+}
+</style>

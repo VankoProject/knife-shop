@@ -1,0 +1,6 @@
+export { getProductsRequest } from './api/getProducts'
+export { getProductByIdRequest } from './api/getProductById'
+export type { ProductsResponse } from './model/api-types'
+export type { ProductFilters, ProductSort } from './model/filters'
+export { DEFAULT_PRODUCT_FILTERS } from './model/filters'
+export * from './model/types'

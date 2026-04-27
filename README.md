@@ -15,7 +15,6 @@ Open in Browser
 You can run these commands in any terminal or in your IDE terminal.
  
 # Architecture overview
-
 The project follows Feature-Sliced Design.
 
 Main layers:
@@ -71,3 +70,7 @@ Application state (including page UI states) is managed with Pinia.
 - Add loading skeletons
 - Move API and business logic into repositories and use cases
 - Add mappers between API models, domain models and UI models
+
+# Live Demo
+The project is deployed on Vercel:
+- https://knife-shop-one.vercel.app

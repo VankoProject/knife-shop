@@ -15,10 +15,8 @@ app.use(router)
 initLiveUpdates()
 
 async function enableMocking(): Promise<void> {
-  if (import.meta.env.DEV) {
-    const { worker } = await import('@/app/mock/browser.ts')
-    await worker.start()
-  }
+  const { worker } = await import('@/app/mock/browser.ts')
+  await worker.start()
 }
 
 enableMocking().then(() => {

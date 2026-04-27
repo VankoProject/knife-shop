@@ -8,7 +8,12 @@ const router = useRouter()
 const loginStore = useAuthStore()
 
 const buttonState = computed(() => {
-  if (loginStore.loginResult.type === UiStateType.Loading) return 'loading'
+  if (loginStore.isAuthenticated) return 'loading'
+
+  if (loginStore.loginResult.type === UiStateType.Loading) {
+    return 'loading'
+  }
+
   return 'idle'
 })
 
